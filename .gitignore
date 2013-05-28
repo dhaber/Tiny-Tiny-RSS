@@ -1,3 +1,4 @@
+update.log
 /messages.mo
 *~
 *.DS_Store
@@ -9,6 +10,7 @@ feed-icons/*
 cache/*/*
 lock/*
 tags
+plugins/videoframes/*
 cache/htmlpurifier/*/*ser
 lib/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer/*/*ser
 web.config

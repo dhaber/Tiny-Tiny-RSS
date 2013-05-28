@@ -806,6 +806,16 @@ class Feeds extends Handler_Protected {
 			return;
 		}
 
+		// force certain feeds to always be newest first
+		// 207 - the verge
+		// 147 - gizmodo
+		// 150 - maximum pc
+		// 36 - pc gamer
+		// 149 - lifehacker
+		if ($feed == 207 || $feed == 147 || $feed == 150 || $feed == 36 || $feed == 149) {
+			$order_by = "feed_dates";
+		}
+
 		$result = false;
 
 		if ($feed < LABEL_BASE_INDEX) {
