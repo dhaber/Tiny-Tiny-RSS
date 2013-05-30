@@ -191,7 +191,7 @@
 			if (!$result) {
 				$query = htmlspecialchars($query);
 				if ($die_on_error) {
-					die("Query <i>$query</i> failed: " . ($link ? mysql_error($link) : "No connection"));
+					die("Query <i>$query</i> failed: " . ($link ? function_exists("mysqli_connect") ? mysqli_error($link) : mysql_error($link) : "No connection"));
 				}
 			}
 			return $result;
@@ -406,7 +406,7 @@
 
 		} else if ($op == 'installschema' || $op == 'skipschema') {
 
-			$link = db_connect($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_TYPE);
+			$link = db_connect($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_TYPE, $DB_PORT);
 
 			if (!$link) {
 				print_error("Unable to connect to database using specified parameters.");
