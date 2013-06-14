@@ -128,7 +128,7 @@ a:hover {
 
 #notify {
 	bottom : 10px;
-	right : 10px;
+	right : 20px;
 	border-width : 1px;
 	border-style : solid;
 	position : absolute;	
@@ -182,7 +182,7 @@ a:hover {
 
 .hl div.hlTitle a {
 	font-weight : bold;
-	color : #999;
+	color : #777;
 }
 
 .hl.Unread div.hlTitle a {
@@ -231,7 +231,9 @@ div.filterTestHolder {
 	border-style : solid;
 	margin : 0px 0px 5px 0px;
 	background-color : #ecf4ff;
-	border-width : 1px 1px 1px 1px;
+	border-width : 1px;
+	border-radius : 4px;
+	box-shadow : inset 0px 0px 2px rgba(0,0,0,0.1);
 }
 
 
@@ -274,7 +276,7 @@ div.notice, div.warning, div.error {
 	border-color : #ccc;
 	border-radius : 4px;
 	border-width : 1px;
-	box-shadow : 0px 0px 2px rgba(0,0,0,0.1);
+	box-shadow : inset 0px 0px 2px rgba(0,0,0,0.1);
 }
 
 div.notice div.inner, div.warning div.inner, div.error div.inner {
@@ -366,6 +368,7 @@ span.contentPreview {
 	color : #999;
 	font-weight : normal;
 	text-shadow : 1px 1px 2px #fff;
+	font-size : 11px;
 }
 
 span.hlLabelRef {
@@ -432,6 +435,8 @@ div.tagCloudContainer {
 	margin : 5px 0px 5px 0px;
 	padding : 5px;
 	text-align : center;
+	border-radius : 4px;
+	box-shadow : inset 0px 0px 2px rgba(0,0,0,0.1);
 }
 
 div.errorExplained {
@@ -439,6 +444,8 @@ div.errorExplained {
 	background-color : #ecf4ff;
 	margin : 5px 0px 5px 0px;
 	padding : 5px;
+	border-radius : 4px;
+	box-shadow : inset 0px 0px 2px rgba(0,0,0,0.1);
 }
 
 ul.feedErrorsList {
@@ -449,6 +456,8 @@ ul.feedErrorsList {
 	background-color : #ecf4ff;
 	margin : 0px 0px 5px 0px;
 	padding : 5px;
+	border-radius : 4px;
+	box-shadow : inset 0px 0px 2px rgba(0,0,0,0.1);
 }
 
 ul.feedErrorsList em {
@@ -582,6 +591,19 @@ div.autocomplete ul li {
 	padding : 2px;
 	height : 32px;
 	cursor : pointer;
+}
+
+.hlTitle {
+	overflow : hidden;
+	white-space : nowrap;
+	max-width : 500px;
+	text-overflow : ellipsis;
+}
+
+div#headlines-frame.wide .hlTitle {
+	max-width : auto;
+	overflow : visible;
+	white-space : normal;
 }
 
 .hlContentH a, .hlContentH span {
@@ -734,7 +756,7 @@ div.hlLeft input {
 }
 
 div.hlLeft img, div.hlRight img {
-	margin : 0px 4px 0px 4px;
+	margin : 0px 4px;
 }
 
 div.hlLeft img {
@@ -940,6 +962,7 @@ ul#filterDlg_Matches, ul#filterDlg_Actions {
 	background-color : #ecf4ff;
 	margin : 0px 0px 5px 0px;
 	padding : 0px;
+	box-shadow : inset 0px 0px 2px rgba(0,0,0,0.1);
 }
 
 ul#filterDlg_Matches li, ul#filterDlg_Actions li {
@@ -959,6 +982,8 @@ ul.helpKbList {
 	background-color : #ecf4ff;
 	margin : 0px 0px 5px 0px;
 	padding : 5px;
+	border-radius : 4px;
+	box-shadow : inset 0px 0px 2px rgba(0,0,0,0.1);
 }
 
 ul.helpKbList span.hksequence {
@@ -1050,19 +1075,32 @@ div.hl.active {
 	margin-right : 25px;
 }
 
-#feedTree .dijitTreeRow {
+body#ttrssMain #feedTree .dijitTreeRow {
 	padding : 2px 0px 2px;
 	border-width : 1px;
 	border-color : transparent;
 	color : #333;
 }
 
-#feedTree .dijitTreeNode {
+.dijitFolderClosed,
+.dijitFolderOpened {
+	display : none;
+}
+
+.dijitTreeNode .dijitCheckBox {
+	margin-left : 4px;
+}
+
+body#ttrssMain #feedTree .dijitTreeIsRoot > .dijitTreeRow > .dijitTreeExpando {
+	margin-left : 5px;
+}
+
+body#ttrssMain #feedTree .dijitTreeNode {
 	padding : 0px;
 	border-width : 0px;
 }
 
-#feedTree { 
+body#ttrssMain #feedTree { 
 	height : 100%;
 	overflow-x : hidden;
 	font-family : "Segoe UI", Tahoma, sans-serif;
@@ -1109,3 +1147,4 @@ body#ttrssPrefs hr {
 .dijitTreeRowSelected .dijitTreeLabel {
 	text-shadow : 1px 1px 2px #fff;
 }
+

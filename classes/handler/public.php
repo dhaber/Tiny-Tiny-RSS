@@ -3,7 +3,7 @@ class Handler_Public extends Handler {
 
 	private function generate_syndicated_feed($owner_uid, $feed, $is_cat,
 		$limit, $offset, $search, $search_mode,
-		$view_mode = false, $format = 'atom') {
+		$view_mode = false, $format = 'atom', $order = false) {
 
 		require_once "lib/MiniTemplator.class.php";
 
@@ -20,6 +20,18 @@ class Handler_Public extends Handler {
 			$date_sort_field = "last_published DESC";
 		else if ($feed == -1)
 			$date_sort_field = "last_marked DESC";
+
+		switch ($order) {
+		case "title":
+			$date_sort_field = "ttrss_entries.title";
+			break;
+		case "date_reverse":
+			$date_sort_field = "date_entered, updated";
+			break;
+		case "feed_dates":
+			$date_sort_field = "updated DESC";
+			break;
+		}
 
 		$qfh_ret = queryFeedHeadlines($feed,
 			1, $view_mode, $is_cat, $search, $search_mode,
@@ -225,7 +237,7 @@ class Handler_Public extends Handler {
 	function getProfiles() {
 		$login = $this->dbh->escape_string($_REQUEST["login"]);
 
-		$result = $this->dbh->query("SELECT * FROM ttrss_settings_profiles,ttrss_users
+		$result = $this->dbh->query("SELECT ttrss_settings_profiles.* FROM ttrss_settings_profiles,ttrss_users
 			WHERE ttrss_users.id = ttrss_settings_profiles.owner_uid AND login = '$login' ORDER BY title");
 
 		print "<select dojoType='dijit.form.Select' style='width : 220px; margin : 0px' name='profile'>";
@@ -337,6 +349,7 @@ class Handler_Public extends Handler {
 		$search = $this->dbh->escape_string($_REQUEST["q"]);
 		$search_mode = $this->dbh->escape_string($_REQUEST["smode"]);
 		$view_mode = $this->dbh->escape_string($_REQUEST["view-mode"]);
+		$order = $this->dbh->escape_string($_REQUEST["order"]);
 
 		$format = $this->dbh->escape_string($_REQUEST['format']);
 
@@ -358,7 +371,7 @@ class Handler_Public extends Handler {
 
 		if ($owner_id) {
 			$this->generate_syndicated_feed($owner_id, $feed, $is_cat, $limit,
-				$offset, $search, $search_mode, $view_mode, $format);
+				$offset, $search, $search_mode, $view_mode, $format, $order);
 		} else {
 			header('HTTP/1.1 403 Forbidden');
 		}

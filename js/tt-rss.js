@@ -789,18 +789,13 @@ function collapse_feedlist() {
 
 		if (!Element.visible('feeds-holder')) {
 			Element.show('feeds-holder');
-			Element.show('feeds-holder_splitter');
 			$("collapse_feeds_btn").innerHTML = "&lt;&lt;";
 		} else {
 			Element.hide('feeds-holder');
-			Element.hide('feeds-holder_splitter');
 			$("collapse_feeds_btn").innerHTML = "&gt;&gt;";
 		}
 
 		dijit.byId("main").resize();
-
-		query = "?op=rpc&method=setpref&key=_COLLAPSED_FEEDLIST&value=true";
-		new Ajax.Request("backend.php", { parameters: query });
 
 	} catch (e) {
 		exception_error("collapse_feedlist", e);
@@ -1061,6 +1056,7 @@ function switchPanelMode(wide) {
 
 			$("headlines-toolbar").setStyle({ borderBottomWidth: '0px' });
 			$("headlines-frame").setStyle({ borderBottomWidth: '0px' });
+			$("headlines-frame").addClassName("wide");
 
 		} else {
 
@@ -1074,6 +1070,8 @@ function switchPanelMode(wide) {
 			$("headlines-toolbar").setStyle({ borderBottomWidth: '1px' });
 
 			$("headlines-frame").setStyle({ borderBottomWidth: '1px' });
+			$("headlines-frame").removeClassName("wide");
+
 		}
 
 		closeArticlePanel();
