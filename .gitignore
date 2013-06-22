@@ -5,7 +5,7 @@ update.log
 #*
 lib/floIcon.php
 .idea/*
-config.php
+#config.php
 feed-icons/*
 cache/*/*
 lock/*

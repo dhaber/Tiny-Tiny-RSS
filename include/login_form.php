@@ -225,7 +225,7 @@ function bwLimitChange(elem) {
 
 		<div class="row">
 			<label>&nbsp;</label>
-			<input dojoType="dijit.form.CheckBox" name="remember_me" id="remember_me" type="checkbox">
+			<input dojoType="dijit.form.CheckBox" name="remember_me" id="remember_me" type="checkbox" checked="checked">
 			<label style='display : inline' for="remember_me"><?php echo __("Remember me") ?></label>
 		</div>
 
