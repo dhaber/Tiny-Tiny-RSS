@@ -191,8 +191,11 @@
 				<div dojoType="dijit.MenuItem" onclick="catchupCurrentFeed('1week')">
 					<?php echo __('Older than one week') ?>
 				</div>
-				<div dojoType="dijit.MenuItem" onclick="catchupCurrentFeed('2week')">
+				<div dojoType="dijit.MenuItem" onclick="catchupCurrentFeed('2weeks')">
 					<?php echo __('Older than two weeks') ?>
+				</div>
+				<div dojoType="dijit.MenuItem" onclick="catchupCurrentFeed('4weeks')">
+					<?php echo __('Older than four weeks') ?>
 				</div>
 			</div>
 		</div>

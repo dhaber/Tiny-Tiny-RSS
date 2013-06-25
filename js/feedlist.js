@@ -420,8 +420,11 @@ function catchupFeed(feed, is_cat, mode) {
 		case "1week":
 			str = __("Mark all articles in %s older than 1 week as read?");
 			break;
-		case "2week":
+		case "2weeks":
 			str = __("Mark all articles in %s older than 2 weeks as read?");
+			break;
+		case "4weeks":
+			str = __("Mark all articles in %s older than 4 weeks as read?");
 			break;
 		default:
 			str = __("Mark all articles in %s as read?");
