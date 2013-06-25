@@ -1066,7 +1066,7 @@
 					$date_qpart = "date_entered < DATE_SUB(NOW(), INTERVAL 2 WEEK) ";
 				}
 				break;
-			case "4weeks":
+			case "4week":
 				if (DB_TYPE == "pgsql") {
 					$date_qpart = "date_entered < NOW() - INTERVAL '4 week' ";
 				} else {
