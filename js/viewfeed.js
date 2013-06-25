@@ -1281,7 +1281,8 @@ function headlines_scroll_handler(e) {
 				var child = rows[i];
 
 				if ($("headlines-frame").scrollTop < child.offsetTop &&
-					child.offsetTop - $("headlines-frame").scrollTop < 100) {
+					child.offsetTop - $("headlines-frame").scrollTop < 100 &&
+					child.id.replace("RROW-", "") != _active_article_id) {
 
 					if (_active_article_id) {
 						var row = $("RROW-" + _active_article_id);
@@ -1611,6 +1612,12 @@ function dismissArticle(id) {
 
 		new Effect.Fade(elem, {duration : 0.5});
 
+		// Remove the content, too
+		var elem_content = $("CICD-" + id);
+		if (elem_content) {
+			Element.remove(elem_content);
+		}
+
 		if (id == getActiveArticleId()) {
 			setActiveArticleId(0);
 		}
@@ -1634,6 +1641,12 @@ function dismissSelectedArticles() {
 					ids[i] != getActiveArticleId()) {
 				new Effect.Fade(elem, {duration : 0.5});
 				sel.push(ids[i]);
+
+				// Remove the content, too
+				var elem_content = $("CICD-" + ids[i]);
+				if (elem_content) {
+					Element.remove(elem_content);
+				}
 			} else {
 				tmp.push(ids[i]);
 			}
@@ -1661,13 +1674,19 @@ function dismissReadArticles() {
 					!elem.hasClassName("Selected")) {
 
 				new Effect.Fade(elem, {duration : 0.5});
+
+				// Remove the content, too
+				var elem_content = $("CICD-" + ids[i]);
+				if (elem_content) {
+					Element.remove(elem_content);
+				}
 			} else {
 				tmp.push(ids[i]);
 			}
 		}
 
 	} catch (e) {
-		exception_error("dismissSelectedArticles", e);
+		exception_error("dismissReadArticles", e);
 	}
 }
 
@@ -2198,30 +2217,24 @@ function openSelectedAttachment(elem) {
 function updateFloatingTitle() {
 	try {
 		var hf = $("headlines-frame");
+		var child = $("RROW-" + _active_article_id);
 
-		var elems = $$("#headlines-frame > div[id*=RROW]");
+		if (child && child.offsetTop + child.offsetHeight > hf.scrollTop) {
 
-		for (var i = 0; i < elems.length; i++) {
-			var child = elems[i];
+			var header = child.getElementsByClassName("cdmHeader")[0];
 
-			if (child.offsetTop + child.offsetHeight > hf.scrollTop) {
-
-				var header = child.getElementsByClassName("cdmHeader")[0];
-
-				if (child.id != $("floatingTitle").getAttribute("rowid")) {
-					$("floatingTitle").setAttribute("rowid", child.id);
-					$("floatingTitle").innerHTML = header.innerHTML;
-				}
-
-				if (child.offsetTop < hf.scrollTop - header.offsetHeight - 100 &&
-						child.offsetTop + child.offsetHeight - hf.scrollTop > 100)
-					Element.show("floatingTitle");
-				else
-					Element.hide("floatingTitle");
-
-				break;
+			if (child.id != $("floatingTitle").getAttribute("rowid")) {
+				$("floatingTitle").setAttribute("rowid", child.id);
+				$("floatingTitle").innerHTML = header.innerHTML;
 			}
+
+			if (child.offsetTop < hf.scrollTop - header.offsetHeight - 100 &&
+					child.offsetTop + child.offsetHeight - hf.scrollTop > 100)
+				Element.show("floatingTitle");
+			else
+				Element.hide("floatingTitle");
 		}
+
 	} catch (e) {
 		exception_error("updateFloatingTitle", e);
 	}

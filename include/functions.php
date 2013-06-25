@@ -71,6 +71,7 @@
 					"hu_HU" => "Magyar (Hungarian)",
 					"it_IT" => "Italiano",
 					"ja_JP" => "日本語 (Japanese)",
+					"ko_KR" => "한국어 (Korean)",
 					"lv_LV" => "Latviešu",
 					"nb_NO" => "Norwegian bokmål",
 					"nl_NL" => "Dutch",
@@ -1058,7 +1059,7 @@
 					$date_qpart = "date_entered < DATE_SUB(NOW(), INTERVAL 1 WEEK) ";
 				}
 				break;
-			case "2weeks":
+			case "2week":
 				if (DB_TYPE == "pgsql") {
 					$date_qpart = "date_entered < NOW() - INTERVAL '2 week' ";
 				} else {
@@ -2756,9 +2757,12 @@
 
 			if ($site_url) {
 
-				if ($entry->hasAttribute('href'))
+				if ($entry->hasAttribute('href')) {
 					$entry->setAttribute('href',
 						rewrite_relative_url($site_url, $entry->getAttribute('href')));
+
+					$entry->setAttribute('rel', 'noreferrer');
+				}
 
 				if ($entry->hasAttribute('src')) {
 					$src = rewrite_relative_url($site_url, $entry->getAttribute('src'));
@@ -3043,7 +3047,7 @@
 			if ($_SESSION["hasAudio"] && (strpos($ctype, "ogg") !== false ||
 				$_SESSION["hasMp3"])) {
 
-				$entry .= "<audio controls>
+				$entry .= "<audio preload=\"none\" controls>
 					<source type=\"$ctype\" src=\"$url\"></source>
 					</audio>";
 

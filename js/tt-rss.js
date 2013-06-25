@@ -272,13 +272,13 @@ function init() {
 				var rv = dijit.byId("feedTree").getNextFeed(
 						getActiveFeedId(), activeFeedIsCat());
 
-				if (rv) viewfeed(rv[0], '', rv[1]);
+				if (rv) viewfeed(rv[0], '', rv[1], null, null, null, true);
 		};
 		hotkey_actions["prev_feed"] = function() {
 				var rv = dijit.byId("feedTree").getPreviousFeed(
 						getActiveFeedId(), activeFeedIsCat());
 
-				if (rv) viewfeed(rv[0], '', rv[1]);
+				if (rv) viewfeed(rv[0], '', rv[1], null, null, null, true);
 		};
 		hotkey_actions["next_article"] = function() {
 				moveToPost('next');
@@ -338,6 +338,9 @@ function init() {
 			}
 		hotkey_actions["dismiss_selected"] = function() {
 				dismissSelectedArticles();
+		};
+		hotkey_actions["dismiss_read"] = function() {
+				dismissReadArticles();
 		};
 		hotkey_actions["open_in_new_window"] = function() {
 				if (getActiveArticleId()) {
