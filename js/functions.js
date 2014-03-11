@@ -226,13 +226,13 @@ function notify_real(msg, no_hide, n_type) {
 		no_hide = true;
 	} else if (n_type == 3) {
 		n.className = "notify error";
-		msg = "<span><img src='images/sign_excl.svg'></span>" + msg;
+		msg = "<span><img src='images/alert.png'></span>" + msg;
 	} else if (n_type == 4) {
 		n.className = "notify info";
-		msg = "<span><img src='images/sign_info.svg'></span>" + msg;
+		msg = "<span><img src='images/information.png'></span>" + msg;
 	}
 
-	msg += " <span><img src=\"images/close_notify.svg\" class=\"close\" title=\"" +
+	msg += " <span><img src=\"images/cross.png\" class=\"close\" title=\"" +
 		__("Click to close") + "\" onclick=\"notify('')\"></span>";
 
 //	msg = "<img src='images/live_com_loading.gif'> " + msg;
@@ -829,7 +829,14 @@ function quickAddFeed() {
 						onComplete: function(transport) {
 							try {
 
-								var reply = JSON.parse(transport.responseText);
+								try {
+									var reply = JSON.parse(transport.responseText);
+								} catch (e) {
+									Element.hide("feed_add_spinner");
+									alert(__("Failed to parse output. This can indicate server timeout and/or network issues. Backend output was logged to the browser console."));
+									console.log('quickAddFeed, backend returned:' + transport.responseText);
+									return;
+								}
 
 								var rc = reply['result'];
 
@@ -853,6 +860,8 @@ function quickAddFeed() {
 									break;
 								case 4:
 									feeds = rc['feeds'];
+
+									Element.show("fadd_multiple_notify");
 
 									var select = dijit.byId("feedDlg_feedContainerSelect");
 
@@ -1148,33 +1157,48 @@ function quickAddFilter() {
 			href: query});
 
 		if (!inPreferences()) {
+			var selectedText = getSelectionText();
+
 			var lh = dojo.connect(dialog, "onLoad", function(){
 				dojo.disconnect(lh);
 
-				var query = "op=rpc&method=getlinktitlebyid&id=" + getActiveArticleId();
+				if (selectedText != "") {
 
-				new Ajax.Request("backend.php", {
-				parameters: query,
-				onComplete: function(transport) {
-					var reply = JSON.parse(transport.responseText);
+					var feed_id = activeFeedIsCat() ? 'CAT:' + parseInt(getActiveFeedId()) :
+						getActiveFeedId();
 
-					var title = false;
+					var rule = { reg_exp: selectedText, feed_id: feed_id, filter_type: 1 };
 
-					if (reply && reply) title = reply.title;
+					addFilterRule(null, dojo.toJson(rule));
 
-					if (title || getActiveFeedId() || activeFeedIsCat()) {
+				} else {
 
-						console.log(title + " " + getActiveFeedId());
+					var query = "op=rpc&method=getlinktitlebyid&id=" + getActiveArticleId();
 
-						var feed_id = activeFeedIsCat() ? 'CAT:' + parseInt(getActiveFeedId()) :
-							getActiveFeedId();
+					new Ajax.Request("backend.php", {
+					parameters: query,
+					onComplete: function(transport) {
+						var reply = JSON.parse(transport.responseText);
 
-						var rule = { reg_exp: title, feed_id: feed_id, filter_type: 1 };
+						var title = false;
 
-						addFilterRule(null, dojo.toJson(rule));
-					}
+						if (reply && reply) title = reply.title;
 
-				} });
+						if (title || getActiveFeedId() || activeFeedIsCat()) {
+
+							console.log(title + " " + getActiveFeedId());
+
+							var feed_id = activeFeedIsCat() ? 'CAT:' + parseInt(getActiveFeedId()) :
+								getActiveFeedId();
+
+							var rule = { reg_exp: title, feed_id: feed_id, filter_type: 1 };
+
+							addFilterRule(null, dojo.toJson(rule));
+						}
+
+					} });
+
+				}
 
 			});
 		}
@@ -1934,3 +1958,25 @@ function feed_to_label_id(feed) {
 	return _label_base_index - 1 + Math.abs(feed);
 }
 
+// http://stackoverflow.com/questions/6251937/how-to-get-selecteduser-highlighted-text-in-contenteditable-element-and-replac
+
+function getSelectionText() {
+	var text = "";
+
+	if (typeof window.getSelection != "undefined") {
+		var sel = window.getSelection();
+		if (sel.rangeCount) {
+			var container = document.createElement("div");
+			for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+				container.appendChild(sel.getRangeAt(i).cloneContents());
+			}
+			text = container.innerHTML;
+		}
+	} else if (typeof document.selection != "undefined") {
+		if (document.selection.type == "Text") {
+			text = document.selection.createRange().textText;
+		}
+	}
+
+	return text.stripTags();
+}

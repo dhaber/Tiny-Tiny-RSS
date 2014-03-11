@@ -765,7 +765,9 @@ class Pref_Prefs extends Handler_Protected {
 						dojoType=\"dijit.form.CheckBox\" $checked
 						type=\"checkbox\"></td>";
 
-				print "<td>$name</td>";
+				$plugin_icon = $checked ? "plugin.png" : "plugin_disabled.png";
+
+				print "<td><label><img src='images/$plugin_icon' alt=''> $name</label></td>";
 				print "<td>" . htmlspecialchars($about[1]);
 				if (@$about[4]) {
 					print " &mdash; <a target=\"_blank\" class=\"visibleLink\"
@@ -818,11 +820,13 @@ class Pref_Prefs extends Handler_Protected {
 
 				print "<tr class='$rowclass'>";
 
+				$plugin_icon = $checked ? "plugin.png" : "plugin_disabled.png";
+
 				print "<td align='center'><input id='FPCHK-$name' name='plugins[]' value='$name' onclick='toggleSelectRow2(this);'
 					dojoType=\"dijit.form.CheckBox\" $checked $disabled
 					type=\"checkbox\"></td>";
 
-				print "<td><label for='FPCHK-$name'>$name</label></td>";
+				print "<td><label for='FPCHK-$name'><img src='images/$plugin_icon' alt=''> $name</label></td>";
 				print "<td><label for='FPCHK-$name'>" . htmlspecialchars($about[1]) . "</label>";
 				if (@$about[4]) {
 					print " &mdash; <a target=\"_blank\" class=\"visibleLink\"
@@ -883,8 +887,9 @@ class Pref_Prefs extends Handler_Protected {
 
 		if (!$otp_enabled) {
 			$secret = $base32->encode(sha1($this->dbh->fetch_result($result, 0, "salt")));
-			$topt = new \OTPHP\TOTP($secret);
-			print QRcode::png($topt->provisioning_uri($login));
+	      print QRcode::png("otpauth://totp/".urlencode($login).
+				"?secret=$secret&issuer=".urlencode("Tiny Tiny RSS"));
+
 		}
 	}
 

@@ -3,7 +3,6 @@ update.log
 *~
 *.DS_Store
 #*
-lib/floIcon.php
 .idea/*
 #config.php
 feed-icons/*
@@ -11,6 +10,7 @@ cache/*/*
 lock/*
 tags
 plugins/videoframes/*
+plugins/fever
 cache/htmlpurifier/*/*ser
 lib/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer/*/*ser
 web.config

@@ -24,6 +24,8 @@ class Updater extends Plugin {
 		// __FILE__ is in plugins/updater so we need to go one level up
 		$work_dir = dirname(dirname(dirname(__FILE__)));
 		$parent_dir = dirname($work_dir);
+		// Set PATH to run "which"
+		putenv('PATH="$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"');
 
 		$log = array();
 		if (!is_array($params)) $params = array();
@@ -339,6 +341,10 @@ class Updater extends Plugin {
 
 			} else {
 				print_notice(__("Your Tiny Tiny RSS installation is up to date."));
+
+				print "<br/> <button dojoType=\"dijit.form.Button\" onclick=\"return updateSelf()\">".
+					__('Force update')."</button></p>";
+
 			}
 
 			print "</div>"; #pane

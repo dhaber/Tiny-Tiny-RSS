@@ -550,9 +550,6 @@ function init_second_stage() {
 			updateFeedList();
 			closeArticlePanel();
 
-			_widescreen_mode = getInitParam("widescreen");
-			switchPanelMode(_widescreen_mode);
-
 			if (parseInt(getCookie("ttrss_fh_width")) > 0) {
 				dijit.byId("feeds-holder").domNode.setStyle(
 					{width: getCookie("ttrss_fh_width") + "px" });
@@ -573,13 +570,17 @@ function init_second_stage() {
 
 			var tmph = dojo.connect(dijit.byId('feeds-holder'), 'resize',
 				function (args) {
-					setCookie("ttrss_fh_width", args.w, getInitParam("cookie_lifetime"));
+					if (args && args.w >= 0) {
+						setCookie("ttrss_fh_width", args.w, getInitParam("cookie_lifetime"));
+					}
 			});
 
 			var tmph = dojo.connect(dijit.byId('content-insert'), 'resize',
 				function (args) {
-					setCookie("ttrss_ci_width", args.w, getInitParam("cookie_lifetime"));
-					setCookie("ttrss_ci_height", args.h, getInitParam("cookie_lifetime"));
+					if (args && args.w >= 0 && args.h >= 0) {
+						setCookie("ttrss_ci_width", args.w, getInitParam("cookie_lifetime"));
+						setCookie("ttrss_ci_height", args.h, getInitParam("cookie_lifetime"));
+					}
 			});
 
 		});
@@ -619,6 +620,9 @@ function init_second_stage() {
 
 		hotkeys[1] = tmp;
 		setInitParam("hotkeys", hotkeys);
+
+		_widescreen_mode = getInitParam("widescreen");
+		switchPanelMode(_widescreen_mode);
 
 		console.log("second stage ok");
 
@@ -847,11 +851,16 @@ function hotkey_handler(e) {
 
 		var keycode = false;
 		var shift_key = false;
+		var ctrl_key = false;
+		var alt_key = false;
+		var meta_key = false;
 
 		var cmdline = $('cmdline');
 
 		shift_key = e.shiftKey;
 		ctrl_key = e.ctrlKey;
+		alt_key = e.altKey;
+		meta_key = e.metaKey;
 
 		if (window.event) {
 			keycode = window.event.keyCode;
@@ -893,6 +902,8 @@ function hotkey_handler(e) {
 		// ensure ^*char notation
 		if (shift_key) hotkey = "*" + hotkey;
 		if (ctrl_key) hotkey = "^" + hotkey;
+		if (alt_key) hotkey = "+" + hotkey;
+		if (meta_key) hotkey = "%" + hotkey;
 
 		hotkey = hotkey_prefix ? hotkey_prefix + " " + hotkey : hotkey;
 		hotkey_prefix = false;
@@ -976,7 +987,12 @@ function newVersionDlg() {
 
 function handle_rpc_json(transport, scheduled_call) {
 	try {
-		var reply = JSON.parse(transport.responseText);
+		try {
+			var reply = JSON.parse(transport.responseText);
+		} catch (e) {
+			alert(__("Failed to parse server reply. This could be caused by a server or network timeout. Backend output was logged to the browser console."));
+			console.log("handle_rpc_json, received: " + transport.responseText);
+		}
 
 		if (reply) {
 
@@ -1053,11 +1069,8 @@ function switchPanelMode(wide) {
 
 	  		dijit.byId("content-insert").domNode.setStyle({width: '50%',
 				height: 'auto',
-				borderLeftWidth: '1px',
-				borderLeftColor: '#c0c0c0',
 				borderTopWidth: '0px' });
 
-			$("headlines-toolbar").setStyle({ borderBottomWidth: '0px' });
 			$("headlines-frame").setStyle({ borderBottomWidth: '0px' });
 			$("headlines-frame").addClassName("wide");
 
@@ -1067,10 +1080,7 @@ function switchPanelMode(wide) {
 
 	  		dijit.byId("content-insert").domNode.setStyle({width: 'auto',
 				height: '50%',
-				borderLeftWidth: '0px',
-				borderTopWidth: '1px'});
-
-			$("headlines-toolbar").setStyle({ borderBottomWidth: '1px' });
+				borderTopWidth: '0px'});
 
 			$("headlines-frame").setStyle({ borderBottomWidth: '1px' });
 			$("headlines-frame").removeClassName("wide");

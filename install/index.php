@@ -3,6 +3,7 @@
 	<title>Tiny Tiny RSS - Installer</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="../css/utility.css">
+	<link rel="stylesheet" type="text/css" href="../css/dijit.css">
 	<style type="text/css">
 	textarea { font-size : 12px; }
 	</style>
@@ -10,6 +11,12 @@
 <body>
 
 <?php
+
+	// could be needed because of existing config.php
+	function define_default($param, $value) {
+		//
+	}
+
 	function make_password($length = 8) {
 
 		$password = "";
@@ -80,13 +87,13 @@
 	}
 
 	function print_error($msg) {
-		print "<div class='error'><span><img src='../images/sign_excl.svg'></span>
+		print "<div class='error'><span><img src='../images/alert.png'></span>
 			<span>$msg</span></div>";
 	}
 
 	function print_notice($msg) {
 		print "<div class=\"notice\">
-			<span><img src=\"../images/sign_info.svg\"></span><span>$msg</span></div>";
+			<span><img src=\"../images/information.png\"></span><span>$msg</span></div>";
 	}
 
 	function db_connect($host, $user, $pass, $db, $type, $port = false) {
