@@ -39,6 +39,9 @@ class PluginHost {
 	const HOOK_FETCH_FEED = 22;
 	const HOOK_QUERY_HEADLINES = 23;
 	const HOOK_HOUSE_KEEPING = 24;
+	const HOOK_SEARCH = 25;
+	const HOOK_FORMAT_ENCLOSURES = 26;
+	const HOOK_SUBSCRIBE_FEED = 27;
 
 	const KIND_ALL = 1;
 	const KIND_SYSTEM = 2;
@@ -73,6 +76,16 @@ class PluginHost {
 
 	function get_dbh() {
 		return $this->dbh;
+	}
+
+	function get_plugin_names() {
+		$names = array();
+
+		foreach ($this->plugins as $p) {
+			array_push($names, get_class($p));
+		}
+
+		return $names;
 	}
 
 	function get_plugins() {

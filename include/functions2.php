@@ -17,6 +17,13 @@
 		$params["default_view_order_by"] = get_pref("_DEFAULT_VIEW_ORDER_BY");
 		$params["bw_limit"] = (int) $_SESSION["bw_limit"];
 		$params["label_base_index"] = (int) LABEL_BASE_INDEX;
+		$params["theme"] = get_pref("USER_CSS_THEME", false, false);
+		$params["plugins"] = implode(", ", PluginHost::getInstance()->get_plugin_names());
+
+		$params["php_platform"] = PHP_OS;
+		$params["php_version"] = PHP_VERSION;
+
+		$params["sanity_checksum"] = sha1(file_get_contents("include/sanity_check.php"));
 
 		$result = db_query("SELECT MAX(id) AS mid, COUNT(*) AS nf FROM
 			ttrss_feeds WHERE owner_uid = " . $_SESSION["uid"]);
@@ -390,20 +397,16 @@
 		$search_words = array();
 
 			if ($search) {
-
-				if (SPHINX_ENABLED) {
-					$ids = join(",", @sphinx_search($search, 0, 500));
-
-					if ($ids)
-						$search_query_part = "ref_id IN ($ids) AND ";
-					else
-						$search_query_part = "ref_id = -1 AND ";
-
-				} else {
-					list($search_query_part, $search_words) = search_to_sql($search);
-					$search_query_part .= " AND ";
+				foreach (PluginHost::getInstance()->get_hooks(PluginHost::HOOK_SEARCH) as $plugin) {
+					list($search_query_part, $search_words) = $plugin->hook_search($search);
+					break;
 				}
 
+				// fall back in case of no plugins
+				if (!$search_query_part) {
+					list($search_query_part, $search_words) = search_to_sql($search);
+				}
+				$search_query_part .= " AND ";
 			} else {
 				$search_query_part = "";
 			}
@@ -583,6 +586,7 @@
 				$query_strategy_part = "unread = false AND last_read IS NOT NULL";
 				$vfeed_query_part = "ttrss_feeds.title AS feed_title,";
 				$allow_archived = true;
+				$ignore_vfeed_group = true;
 
 				if (!$override_order) $override_order = "last_read DESC";
 
@@ -1842,8 +1846,17 @@
 		$result = get_article_enclosures($id);
 		$rv = '';
 
-		if (count($result) > 0) {
+		foreach (PluginHost::getInstance()->get_hooks(PluginHost::HOOK_FORMAT_ENCLOSURES) as $plugin) {
+			$retval = $plugin->hook_format_enclosures($rv, $result, $id, $always_display_enclosures, $article_content, $hide_images);
+			if (is_array($retval)) {
+				$rv = $retval[0];
+				$result = $retval[1];
+			} else {
+				$rv = $retval;
+			}
+		}
 
+		if ($rv === '' && !empty($result)) {
 			$entries_html = array();
 			$entries = array();
 			$entries_inline = array();
@@ -1984,39 +1997,6 @@
 
 			return build_url($parts);
 		}
-	}
-
-	function sphinx_search($query, $offset = 0, $limit = 30) {
-		require_once 'lib/sphinxapi.php';
-
-		$sphinxClient = new SphinxClient();
-
-		$sphinxpair = explode(":", SPHINX_SERVER, 2);
-
-		$sphinxClient->SetServer($sphinxpair[0], (int)$sphinxpair[1]);
-		$sphinxClient->SetConnectTimeout(1);
-
-		$sphinxClient->SetFieldWeights(array('title' => 70, 'content' => 30,
-			'feed_title' => 20));
-
-		$sphinxClient->SetMatchMode(SPH_MATCH_EXTENDED2);
-		$sphinxClient->SetRankingMode(SPH_RANK_PROXIMITY_BM25);
-		$sphinxClient->SetLimits($offset, $limit, 1000);
-		$sphinxClient->SetArrayResult(false);
-		$sphinxClient->SetFilter('owner_uid', array($_SESSION['uid']));
-
-		$result = $sphinxClient->Query($query, SPHINX_INDEX);
-
-		$ids = array();
-
-		if (is_array($result['matches'])) {
-			foreach (array_keys($result['matches']) as $int_id) {
-				$ref_id = $result['matches'][$int_id]['attrs']['ref_id'];
-				array_push($ids, $ref_id);
-			}
-		}
-
-		return $ids;
 	}
 
 	function cleanup_tags($days = 14, $limit = 1000) {

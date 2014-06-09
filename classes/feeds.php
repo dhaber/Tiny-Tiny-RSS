@@ -66,7 +66,7 @@ class Feeds extends Handler_Protected {
 
 			if ($error) {
 				$error = htmlspecialchars($error);
-				$reply .= "&nbsp;<img title=\"$error\" src='images/error.png' alt='error' class=\"noborder\" style=\"vertical-align : middle\">";
+				$reply .= "&nbsp;<img title=\"$error\" src='images/error.png' alt='error' class=\"noborder\">";
 			}
 
 		} else {
@@ -248,6 +248,8 @@ class Feeds extends Handler_Protected {
 				false, 0, $include_children);
 		}
 
+		$vfeed_group_enabled = get_pref("VFEED_GROUP_BY_FEED") && $feed != -6;
+
 		if ($_REQUEST["debug"]) $timing_info = print_checkpoint("H1", $timing_info);
 
 		$result = $qfh_ret[0];
@@ -421,7 +423,7 @@ class Feeds extends Handler_Protected {
 
 				if (!get_pref('COMBINED_DISPLAY_MODE')) {
 
-					if (get_pref('VFEED_GROUP_BY_FEED')) {
+					if ($vfeed_group_enabled) {
 						if ($feed_id != $vgroup_last_feed && $line["feed_title"]) {
 
 							$cur_feed_title = $line["feed_title"];
@@ -472,7 +474,7 @@ class Feeds extends Handler_Protected {
 
 					$reply['content'] .= "</div>";
 
-					if (!get_pref('VFEED_GROUP_BY_FEED')) {
+					if (!$vfeed_group_enabled) {
 						if (@$line["feed_title"]) {
 							$rgba = @$rgba_cache[$feed_id];
 
@@ -491,12 +493,12 @@ class Feeds extends Handler_Protected {
 
 					$reply['content'] .= $score_pic;
 
-					if ($line["feed_title"] && !get_pref('VFEED_GROUP_BY_FEED')) {
+					if ($line["feed_title"] && !$vfeed_group_enabled) {
 
 						$reply['content'] .= "<span onclick=\"viewfeed($feed_id)\"
 							style=\"cursor : pointer\"
 							title=\"".htmlspecialchars($line['feed_title'])."\">
-							$feed_icon_img<span>";
+							$feed_icon_img</span>";
 					}
 
 					$reply['content'] .= "</div>";
@@ -516,7 +518,7 @@ class Feeds extends Handler_Protected {
 						$line = $p->hook_render_article_cdm($line);
 					}
 
-					if (get_pref('VFEED_GROUP_BY_FEED') && $line["feed_title"]) {
+					if ($vfeed_group_enabled && $line["feed_title"]) {
 						if ($feed_id != $vgroup_last_feed) {
 
 							$cur_feed_title = $line["feed_title"];
@@ -592,7 +594,7 @@ class Feeds extends Handler_Protected {
 
 					$reply['content'] .= "</span>";
 
-					if (!get_pref('VFEED_GROUP_BY_FEED')) {
+					if (!$vfeed_group_enabled) {
 						if (@$line["feed_title"]) {
 							$rgba = @$rgba_cache[$feed_id];
 
@@ -1155,7 +1157,7 @@ class Feeds extends Handler_Protected {
 
 		print "<div class=\"dlgButtons\">";
 
-		if (!SPHINX_ENABLED) {
+		if (count(PluginHost::getInstance()->get_hooks(PluginHost::HOOK_SEARCH)) == 0) {
 			print "<div style=\"float : left\">
 				<a class=\"visibleLink\" target=\"_blank\" href=\"http://tt-rss.org/wiki/SearchSyntax\">".__("Search syntax")."</a>
 				</div>";
