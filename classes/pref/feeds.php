@@ -55,6 +55,7 @@ class Pref_Feeds extends Handler_Protected {
 			$cat['unread'] = 0;
 			$cat['child_unread'] = 0;
 			$cat['auxcounter'] = 0;
+			$cat['parent_id'] = $cat_id;
 
 			$cat['items'] = $this->get_category_items($line['id']);
 
@@ -494,7 +495,7 @@ class Pref_Feeds extends Handler_Protected {
 		$feed_id = $this->dbh->escape_string($_REQUEST["feed_id"]);
 
 		if (is_file($icon_file) && $feed_id) {
-			if (filesize($icon_file) < 20000) {
+			if (filesize($icon_file) < 65535) {
 
 				$result = $this->dbh->query("SELECT id FROM ttrss_feeds
 					WHERE id = '$feed_id' AND owner_uid = ". $_SESSION["uid"]);
@@ -737,9 +738,9 @@ class Pref_Feeds extends Handler_Protected {
 			<input type=\"hidden\" name=\"op\" value=\"pref-feeds\">
 			<input type=\"hidden\" name=\"feed_id\" value=\"$feed_id\">
 			<input type=\"hidden\" name=\"method\" value=\"uploadicon\">
-			<button dojoType=\"dijit.form.Button\" onclick=\"return uploadFeedIcon();\"
+			<button class=\"small\" dojoType=\"dijit.form.Button\" onclick=\"return uploadFeedIcon();\"
 				type=\"submit\">".__('Replace')."</button>
-			<button dojoType=\"dijit.form.Button\" onclick=\"return removeFeedIcon($feed_id);\"
+			<button class=\"small\" dojoType=\"dijit.form.Button\" onclick=\"return removeFeedIcon($feed_id);\"
 				type=\"submit\">".__('Remove')."</button>
 			</form>";
 

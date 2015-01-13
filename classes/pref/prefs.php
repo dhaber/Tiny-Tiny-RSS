@@ -181,7 +181,8 @@ class Pref_Prefs extends Handler_Protected {
 		global $access_level_names;
 
 		$prefs_blacklist = array("STRIP_UNSAFE_TAGS", "REVERSE_HEADLINES",
-			"SORT_HEADLINES_BY_FEED_DATE", "DEFAULT_ARTICLE_LIMIT");
+			"SORT_HEADLINES_BY_FEED_DATE", "DEFAULT_ARTICLE_LIMIT",
+			"FEEDS_SORT_BY_UNREAD");
 
 		/* "FEEDS_SORT_BY_UNREAD", "HIDE_READ_FEEDS", "REVERSE_HEADLINES" */
 
@@ -570,7 +571,8 @@ class Pref_Prefs extends Handler_Protected {
 
 			} else if ($pref_name == "USER_CSS_THEME") {
 
-				$themes = array_map("basename", glob("themes/*.css"));
+				$themes = array_filter(array_map("basename", glob("themes/*.css")),
+					"theme_valid");
 
 				print_select($pref_name, $value, $themes,
 					'dojoType="dijit.form.Select"');
